@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Tutor Bimbel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN for Statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0f172a',
+                            900: '#020617',
+                            700: '#1e293b'
+                        },
+                        gold: {
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-gradient-overlay {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.90) 0%, rgba(30, 41, 59, 0.85) 100%);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #eab308;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full bg-navy-900 text-white flex flex-col justify-between relative antialiased selection:bg-gold-500 selection:text-navy-900">
+
+    <div id="app-background" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-700 opacity-40" style="background-image: url('https://placehold.co/1920x1080/0f172a/ffffff?text=Background+Tutor+Bimbel');"></div>
+    <div class="absolute inset-0 bg-gradient-overlay z-0"></div>
+
+    <div id="floating-box-container" class="hidden fixed bottom-20 right-6 z-40 max-w-sm w-full bg-navy-800 border-2 border-gold-500 rounded-2xl shadow-2xl p-4 transition-all duration-300 transform translate-y-0">
+        <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold px-2 py-0.5 bg-gold-500 text-navy-900 rounded-full uppercase tracking-wider">Informasi Penting</span>
+            <button onclick="closeFloatingBox()" class="text-gray-400 hover:text-white transition bg-navy-900/50 hover:bg-red-600 rounded-full w-7 h-7 flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+        <div id="floating-box-content" class="text-sm text-gray-200 mb-3 space-y-2">
+            <!-- Dynamic Floating Content -->
+        </div>
+        <div id="floating-box-link-wrap" class="hidden">
+            <a id="floating-box-link" href="#" target="_blank" class="block text-center w-full py-2 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+                Kunjungi Tautan <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </div>
+
+    <header class="relative z-10 w-full max-w-4xl mx-auto px-4 pt-10 pb-6 text-center">
+        <div id="logo-container" class="mb-4 flex justify-center">
+            <div class="w-20 h-20 bg-gold-500 rounded-full flex items-center justify-center shadow-xl border-2 border-white/20 overflow-hidden">
+                <i class="fa-solid fa-graduation-cap text-navy-900 text-3xl"></i>
+            </div>
+        </div>
+        <h1 id="main-title" class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-3 drop-shadow-md">
+            Selamat Datang di Tutor Bimbel
+        </h1>
+        <p id="main-subtitle" class="text-base md:text-lg text-gray-300 max-w-xl mx-auto font-medium">
+            Silakan Pilih Menu Tujuan Anda
+        </p>
+    </header>
+
+    <main class="relative z-10 w-full max-w-3xl mx-auto px-4 py-4 flex-grow">
+        <div id="links-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <!-- Dynamically populated links -->
+        </div>
+    </main>
+
+    <footer class="relative z-10 w-full max-w-3xl mx-auto px-4 py-6 text-center space-y-4">
+        <div id="footer-description" class="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed"></div>
+        <div id="social-media-container" class="flex justify-center items-center space-x-4 pt-2"></div>
+        
+        <div class="pt-4 pb-2">
+            <button onclick="openAdminLoginModal()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-navy-800/80 hover:bg-navy-700 text-gray-400 hover:text-gold-400 text-xs font-medium rounded-full border border-gray-700/50 shadow-sm transition">
+                <i class="fa-solid fa-lock text-[10px]"></i>
+                <span>Admin Panel</span>
+            </button>
+        </div>
+    </footer>
+
+    <div id="admin-login-modal" class="hidden fixed inset-0 z-50 bg-navy-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-gray-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-2 text-gold-400">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                    <h3 class="text-lg font-bold text-white">Login Admin</h3>
+                </div>
+                <button onclick="closeAdminLoginModal()" class="text-gray-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Password Admin</label>
+                    <input type="password" id="admin-password-input" required placeholder="Masukkan password admin" class="w-full px-4 py-3 bg-navy-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-gold-500 text-sm">
+                </div>
+                <div id="login-error" class="hidden text-red-400 text-xs font-medium">Password salah! Silakan coba lagi.</div>
+                <button type="submit" class="w-full py-3 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-sm transition shadow-lg">
+                    Masuk Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-dashboard-modal" class="hidden fixed inset-0 z-50 bg-navy-900/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-navy-800 border border-gray-700 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 bg-navy-900 border-b border-gray-700 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gold-500 flex items-center justify-center text-navy-900 font-bold text-lg">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Dashboard Admin (Firebase Connected)</h2>
+                        <p class="text-xs text-gray-400">Kelola web, link, statistik, dan tampilan database</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white bg-navy-800 hover:bg-red-600 w-9 h-9 rounded-xl flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-wrap bg-navy-900/50 px-4 pt-2 border-b border-gray-700 gap-2">
+                <button onclick="switchAdminTab('links')" id="tab-btn-links" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gold-400 border-b-2 border-gold-500 bg-navy-800">
+                    <i class="fa-solid fa-link mr-1.5"></i> Kelola Link
+                </button>
+                <button onclick="switchAdminTab('content')" id="tab-btn-content" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-pen-to-square mr-1.5"></i> Teks & Tampilan
+                </button>
+                <button onclick="switchAdminTab('social')" id="tab-btn-social" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-share-nodes mr-1.5"></i> Media Sosial
+                </button>
+                <button onclick="switchAdminTab('floating')" id="tab-btn-floating" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-message mr-1.5"></i> Kotak Melayang
+                </button>
+                <button onclick="switchAdminTab('stats')" id="tab-btn-stats" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i> Statistik
+                </button>
+                <button onclick="switchAdminTab('security')" id="tab-btn-security" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-key mr-1.5"></i> Keamanan
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+
+                <!-- Tab 1: Links Management -->
+                <div id="admin-tab-links" class="admin-tab-content space-y-6">
+                    <div class="bg-navy-900/60 p-5 rounded-2xl border border-gray-700">
+                        <h3 id="form-link-title-label" class="text-sm font-bold text-white mb-4 flex items-center">
+                            <i class="fa-solid fa-circle-plus text-gold-500 mr-2"></i> Tambah Link Baru
+                        </h3>
+                        <form id="link-form" onsubmit="handleSaveLink(event)" class="space-y-4">
+                            <input type="hidden" id="edit-link-id">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Judul Link</label>
+                                    <input type="text" id="link-title-input" required placeholder="Contoh: Pendaftaran Bimbel Online" class="w-full px-3 py-2 bg-navy-800 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">URL Tujuan</label>
+                                    <input type="url" id="link-url-input" required placeholder="https://example.com" class="w-full px-3 py-2 bg-navy-800 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Foto Icon (Max 5MB - Format JPG/PNG - Rasio 1:1)</label>
+                                <input type="file" id="link-image-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
+                            </div>
+                            <div class="flex space-x-3">
+                                <button type="submit" id="link-submit-btn" class="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+                                    Simpan Link
+                                </button>
+                                <button type="button" id="link-cancel-edit-btn" onclick="cancelEditLink()" class="hidden px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl text-xs transition">
+                                    Batal Edit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-gray-400 tracking-wider mb-3">Daftar Link Tersimpan (Firestore)</h4>
+                        <div id="admin-links-list" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Content & Branding -->
+                <div id="admin-tab-content" class="admin-tab-content hidden space-y-6">
+                    <form onsubmit="handleSaveBranding(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Judul Utama Web</label>
+                                <input type="text" id="setting-main-title" required class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Subjudul / Tulisan Kedua</label>
+                                <input type="text" id="setting-main-subtitle" required class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Keterangan Bawah (Footer Description)</label>
+                            <textarea id="setting-footer-desc" rows="3" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Logo Halaman (Max 5MB - JPG/PNG)</label>
+                                <input type="file" id="setting-logo-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Foto Latar Belakang / Background (Max 5MB - JPG/PNG)</label>
+                                <input type="file" id="setting-bg-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+                            Simpan Perubahan Tampilan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 3: Social Media Links -->
+                <div id="admin-tab-social" class="admin-tab-content hidden space-y-6">
+                    <form onsubmit="handleSaveSocial(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Link WhatsApp (Opsional)</label>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-gray-400 text-sm"><i class="fa-brands fa-whatsapp text-green-400"></i></span>
+                                <input type="url" id="social-wa" placeholder="https://wa.me/628xxxxxxxxxx" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Link TikTok (Opsional)</label>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-gray-400 text-sm"><i class="fa-brands fa-tiktok"></i></span>
+                                <input type="url" id="social-tiktok" placeholder="https://tiktok.com/@username" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Link Instagram (Opsional)</label>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-gray-400 text-sm"><i class="fa-brands fa-instagram text-pink-400"></i></span>
+                                <input type="url" id="social-instagram" placeholder="https://instagram.com/username" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                            </div>
+                        </div>
+                        <button type="submit" class="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+                            Simpan Media Sosial
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 4: Floating Box Management -->
+                <div id="admin-tab-floating" class="admin-tab-content hidden space-y-6">
+                    <form onsubmit="handleSaveFloating(event)" class="space-y-4">
+                        <div class="flex items-center space-x-3 bg-navy-900/60 p-4 rounded-xl border border-gray-700">
+                            <input type="checkbox" id="floating-active" class="w-4 h-4 text-gold-500 bg-navy-800 border-gray-700 rounded focus:ring-gold-500">
+                            <label for="floating-active" class="text-sm font-medium text-white">Aktifkan Kotak Teks Melayang pada Halaman Utama</label>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Isi Teks / Pengumuman</label>
+                            <textarea id="floating-text" rows="3" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Upload Foto dalam Kotak (Opsional - Max 5MB)</label>
+                            <input type="file" id="floating-image-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Link Tujuan pada Kotak (Opsional)</label>
+                            <input type="url" id="floating-url" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                        </div>
+                        <button type="submit" class="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+                            Simpan Kotak Melayang
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 5: Visitor & Link Statistics -->
+                <div id="admin-tab-stats" class="admin-tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-navy-900/60 p-4 rounded-2xl border border-gray-700">
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Statistik Kunjungan & Klik</h3>
+                            <p class="text-xs text-gray-400">Analisis kunjungan profil dan klik dari Firestore</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <select id="stats-filter-target" onchange="renderStatistics()" class="px-3 py-1.5 bg-navy-800 border border-gray-700 rounded-xl text-white text-xs focus:outline-none focus:border-gold-500">
+                                <option value="all">Semua (Profil & Link)</option>
+                                <option value="profile">Kunjungan Profil Web</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-navy-900/50 p-4 rounded-2xl border border-gray-700 flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gold-500/10 border border-gold-500/30 rounded-xl flex items-center justify-center text-gold-400 text-xl font-bold">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Total Kunjungan Profil</div>
+                                <div id="stat-total-profile" class="text-2xl font-extrabold text-white">0</div>
+                            </div>
+                        </div>
+                        <div class="bg-navy-900/50 p-4 rounded-2xl border border-gray-700 flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gold-500/10 border border-gold-500/30 rounded-xl flex items-center justify-center text-gold-400 text-xl font-bold">
+                                <i class="fa-solid fa-mouse-pointer"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase font-semibold">Total Klik Link</div>
+                                <div id="stat-total-clicks" class="text-2xl font-extrabold text-white">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-navy-900/50 p-4 rounded-2xl border border-gray-700 relative h-72">
+                        <canvas id="statsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tab 6: Security & Password Management -->
+                <div id="admin-tab-security" class="admin-tab-content hidden space-y-6">
+                    <form onsubmit="handleUpdatePassword(event)" class="space-y-4 max-w-md">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Password Lama</label>
+                            <input type="password" id="old-pass" required placeholder="Masukkan password saat ini" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Password Baru</label>
+                            <input type="password" id="new-pass" required placeholder="Masukkan password baru" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Konfirmasi Password Baru</label>
+                            <input type="password" id="confirm-pass" required placeholder="Ulangi password baru" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div id="password-msg" class="text-xs font-medium"></div>
+                        <button type="submit" class="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+                            Perbarui Password
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="fixed top-6 right-6 z-50 transform translate-y-[-200%] transition-transform duration-300 bg-navy-800 border border-gold-500 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
+        <span id="toast-message" class="text-xs font-medium">Berhasil menyimpan data ke Firebase!</span>
+    </div>
+
+    <!-- Firebase SDK & App Logic Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC6bHEfXJ8NirAsVb0RrPpEYvVfZrbX9X4",
+            authDomain: "tutorbimbel-d44ef.firebaseapp.com",
+            projectId: "tutorbimbel-d44ef",
+            storageBucket: "tutorbimbel-d44ef.firebasestorage.app",
+            messagingSenderId: "853840492340",
+            appId: "1:853840492340:web:2ccc732841ae3dcf495761",
+            measurementId: "G-Y7J670VL6N"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Default Data fallback if empty in Firestore
+        let defaultAppConfig = {
+            mainTitle: "Selamat Datang di Tutor Bimbel",
+            mainSubtitle: "Silakan Pilih Menu Tujuan Anda",
+            footerDesc: "Platform belajar online terpadu untuk membimbing prestasi akademik Anda dengan mentor profesional.",
+            logoUrl: "",
+            bgUrl: "",
+            adminPassword: "aam14",
+            socials: {
+                whatsapp: "https://wa.me/6281234567890",
+                tiktok: "https://tiktok.com",
+                instagram: "https://instagram.com"
+            }
+        };
+
+        let defaultLinks = [
+            { id: '1', title: 'Pendaftaran Bimbel Reguler', url: 'https://google.com', image: 'https://placehold.co/400x400/0f172a/eab308?text=Reguler' },
+            { id: '2', title: 'Konsultasi Privat Eksklusif', url: 'https://google.com', image: 'https://placehold.co/400x400/0f172a/eab308?text=Privat' },
+            { id: '3', title: 'Modul & Materi Belajar', url: 'https://google.com', image: 'https://placehold.co/400x400/0f172a/eab308?text=Modul' },
+            { id: '4', title: 'Ujian Tryout Nasional', url: 'https://google.com', image: 'https://placehold.co/400x400/0f172a/eab308?text=Tryout' }
+        ];
+
+        let defaultFloating = {
+            active: true,
+            text: "Dapatkan diskon spesial pendaftaran bulan ini! Hubungi admin kami sekarang.",
+            image: "",
+            url: ""
+        };
+
+        let appConfig = defaultAppConfig;
+        let appLinks = defaultLinks;
+        let appStats = { logs: [] };
+        let floatingConfig = defaultFloating;
+        let chartInstance = null;
+
+        // Load data from Firebase Firestore
+        async function loadDataFromFirebase() {
+            try {
+                // 1. Load Config (settings/config)
+                const configDoc = await getDoc(doc(db, "settings", "config"));
+                if (configDoc.exists()) {
+                    appConfig = configDoc.data();
+                } else {
+                    await setDoc(doc(db, "settings", "config"), defaultAppConfig);
+                }
+
+                // 2. Load Floating Box (settings/floating)
+                const floatingDoc = await getDoc(doc(db, "settings", "floating"));
+                if (floatingDoc.exists()) {
+                    floatingConfig = floatingDoc.data();
+                } else {
+                    await setDoc(doc(db, "settings", "floating"), defaultFloating);
+                }
+
+                // 3. Load Links (collection: links)
+                const linksSnapshot = await getDocs(collection(db, "links"));
+                if (!linksSnapshot.empty) {
+                    appLinks = [];
+                    linksSnapshot.forEach(d => {
+                        appLinks.push({ id: d.id, ...d.data() });
+                    });
+                } else {
+                    for (let l of defaultLinks) {
+                        await setDoc(doc(db, "links", l.id), { title: l.title, url: l.url, image: l.image });
+                    }
+                    appLinks = defaultLinks;
+                }
+
+                // 4. Load Stats (collection: stats)
+                const statsSnapshot = await getDocs(collection(db, "stats"));
+                appStats.logs = [];
+                statsSnapshot.forEach(d => {
+                    appStats.logs.push(d.data());
+                });
+
+            } catch (error) {
+                console.error("Error loading from Firebase:", error);
+                showToast("Gagal memuat data dari Firebase!", true);
+            }
+
+            // Record initial profile visit
+            await recordStat('profile');
+            renderMainPage();
+            checkFloatingBox();
+        }
+
+        // Record Stat to Firebase
+        window.recordStat = async function(type, linkId = null) {
+            const logEntry = {
+                type: type,
+                linkId: linkId,
+                timestamp: Date.now()
+            };
+            appStats.logs.push(logEntry);
+            try {
+                await addDoc(collection(db, "stats"), logEntry);
+            } catch (e) {
+                console.error("Error saving stat:", e);
+            }
+        };
+
+        // Render Main Page
+        function renderMainPage() {
+            const bgEl = document.getElementById('app-background');
+            if (appConfig.bgUrl) {
+                bgEl.style.backgroundImage = `url('${appConfig.bgUrl}')`;
+            } else {
+                bgEl.style.backgroundImage = `url('https://placehold.co/1920x1080/0f172a/ffffff?text=Tutor+Bimbel')`;
+            }
+
+            const logoContainer = document.getElementById('logo-container');
+            if (appConfig.logoUrl) {
+                logoContainer.innerHTML = `<img src="${appConfig.logoUrl}" alt="Logo" class="w-20 h-20 rounded-full object-cover shadow-xl border-2 border-white/20">`;
+            } else {
+                logoContainer.innerHTML = `<div class="w-20 h-20 bg-gold-500 rounded-full flex items-center justify-center shadow-xl border-2 border-white/20"><i class="fa-solid fa-graduation-cap text-navy-900 text-3xl"></i></div>`;
+            }
+
+            document.getElementById('main-title').innerText = appConfig.mainTitle;
+            document.getElementById('main-subtitle').innerText = appConfig.mainSubtitle;
+            document.getElementById('footer-description').innerText = appConfig.footerDesc;
+
+            const socialEl = document.getElementById('social-media-container');
+            let socialHtml = '';
+            if (appConfig.socials?.whatsapp) {
+                socialHtml += `<a href="${appConfig.socials.whatsapp}" target="_blank" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-whatsapp text-lg"></i></a>`;
+            }
+            if (appConfig.socials?.tiktok) {
+                socialHtml += `<a href="${appConfig.socials.tiktok}" target="_blank" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-tiktok text-lg"></i></a>`;
+            }
+            if (appConfig.socials?.instagram) {
+                socialHtml += `<a href="${appConfig.socials.instagram}" target="_blank" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-instagram text-lg"></i></a>`;
+            }
+            socialEl.innerHTML = socialHtml;
+
+            const gridEl = document.getElementById('links-grid');
+            if (appLinks.length === 0) {
+                gridEl.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 text-sm">Belum ada link yang ditambahkan.</div>`;
+                return;
+            }
+
+            let linksHtml = '';
+            appLinks.forEach(link => {
+                const imgSrc = link.image || 'https://placehold.co/400x400/0f172a/eab308?text=Icon';
+                linksHtml += `
+                    <div onclick="handleLinkClick('${link.id}', '${link.url}')" class="group bg-navy-800/80 hover:bg-navy-800 border border-gray-700/80 hover:border-gold-500 rounded-2xl p-4 flex items-center space-x-4 cursor-pointer transition-all duration-300 shadow-lg hover:shadow-gold-500/10 hover:-translate-y-1">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl overflow-hidden bg-navy-900 border border-gray-700 group-hover:border-gold-500 transition">
+                            <img src="${imgSrc}" alt="${link.title}" class="w-full h-full object-cover aspect-square group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x400/0f172a/eab308?text=Error'">
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-gold-400 transition truncate">${link.title}</h3>
+                            <p class="text-xs text-gray-400 mt-1 flex items-center">
+                                <span>Klik untuk Akses</span>
+                                <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-gold-400"></i>
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+            gridEl.innerHTML = linksHtml;
+        }
+
+        window.handleLinkClick = async function(linkId, url) {
+            await recordStat('link', linkId);
+            window.open(url, '_blank');
+        };
+
+        function checkFloatingBox() {
+            const container = document.getElementById('floating-box-container');
+            const contentEl = document.getElementById('floating-box-content');
+            const linkWrap = document.getElementById('floating-box-link-wrap');
+            const linkEl = document.getElementById('floating-box-link');
+
+            if (!floatingConfig.active) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            let html = '';
+            if (floatingConfig.image) {
+                html += `<div class="rounded-xl overflow-hidden mb-2 border border-gray-700"><img src="${floatingConfig.image}" class="w-full h-32 object-cover"></div>`;
+            }
+            html += `<p class="text-xs leading-relaxed text-gray-200">${floatingConfig.text || ''}</p>`;
+            contentEl.innerHTML = html;
+
+            if (floatingConfig.url) {
+                linkWrap.classList.remove('hidden');
+                linkEl.href = floatingConfig.url;
+            } else {
+                linkWrap.classList.add('hidden');
+            }
+            container.classList.remove('hidden');
+        }
+
+        window.closeFloatingBox = function() {
+            document.getElementById('floating-box-container').classList.add('hidden');
+        };
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.innerText = message;
+            if (isError) {
+                iconEl.className = "fa-solid fa-circle-exclamation text-red-400 text-lg";
+                toast.classList.remove('border-gold-500');
+                toast.classList.add('border-red-500');
+            } else {
+                iconEl.className = "fa-solid fa-circle-check text-gold-400 text-lg";
+                toast.classList.remove('border-red-500');
+                toast.classList.add('border-gold-500');
+            }
+
+            toast.classList.remove('translate-y-[-200%]');
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-200%]');
+            }, 3000);
+        }
+
+        window.openAdminLoginModal = function() {
+            document.getElementById('admin-password-input').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+        };
+
+        window.closeAdminLoginModal = function() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        };
+
+        window.handleAdminLogin = function(event) {
+            event.preventDefault();
+            const pass = document.getElementById('admin-password-input').value;
+            if (pass === appConfig.adminPassword) {
+                closeAdminLoginModal();
+                openAdminDashboard();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        };
+
+        function openAdminDashboard() {
+            document.getElementById('setting-main-title').value = appConfig.mainTitle;
+            document.getElementById('setting-main-subtitle').value = appConfig.mainSubtitle;
+            document.getElementById('setting-footer-desc').value = appConfig.footerDesc;
+            document.getElementById('social-wa').value = appConfig.socials?.whatsapp || '';
+            document.getElementById('social-tiktok').value = appConfig.socials?.tiktok || '';
+            document.getElementById('social-instagram').value = appConfig.socials?.instagram || '';
+
+            document.getElementById('floating-active').checked = floatingConfig.active;
+            document.getElementById('floating-text').value = floatingConfig.text;
+            document.getElementById('floating-url').value = floatingConfig.url;
+
+            renderAdminLinksList();
+            renderStatsFilterOptions();
+
+            document.getElementById('admin-dashboard-modal').classList.remove('hidden');
+            switchAdminTab('links');
+        }
+
+        window.closeAdminDashboard = function() {
+            document.getElementById('admin-dashboard-modal').classList.add('hidden');
+            renderMainPage();
+            checkFloatingBox();
+        };
+
+        window.switchAdminTab = function(tabName) {
+            const tabs = ['links', 'content', 'social', 'floating', 'stats', 'security'];
+            tabs.forEach(t => {
+                const contentEl = document.getElementById(`admin-tab-${t}`);
+                const btnEl = document.getElementById(`tab-btn-${t}`);
+                if (t === tabName) {
+                    contentEl.classList.remove('hidden');
+                    btnEl.className = "admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gold-400 border-b-2 border-gold-500 bg-navy-800";
+                } else {
+                    contentEl.classList.add('hidden');
+                    btnEl.className = "admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white";
+                }
+            });
+
+            if (tabName === 'stats') {
+                renderStatistics();
+            }
+        };
+
+        function processImageFile(fileInputId, callback) {
+            const fileInput = document.getElementById(fileInputId);
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast("Ukuran file maksimal 5MB!", true);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    callback(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                callback(null);
+            }
+        }
+
+        window.handleSaveLink = async function(event) {
+            event.preventDefault();
+            const editId = document.getElementById('edit-link-id').value;
+            const title = document.getElementById('link-title-input').value;
+            const url = document.getElementById('link-url-input').value;
+
+            processImageFile('link-image-input', async function(imageBase64) {
+                if (editId) {
+                    const linkObj = appLinks.find(l => l.id === editId);
+                    const updatedData = {
+                        title: title,
+                        url: url,
+                        image: imageBase64 || linkObj.image
+                    };
+                    await setDoc(doc(db, "links", editId), updatedData);
+                    appLinks = appLinks.map(l => l.id === editId ? { id: editId, ...updatedData } : l);
+                    showToast("Link berhasil diperbarui di Firebase!");
+                } else {
+                    const newId = 'link_' + Date.now();
+                    const newLinkData = {
+                        title: title,
+                        url: url,
+                        image: imageBase64 || 'https://placehold.co/400x400/0f172a/eab308?text=New'
+                    };
+                    await setDoc(doc(db, "links", newId), newLinkData);
+                    appLinks.push({ id: newId, ...newLinkData });
+                    showToast("Link baru berhasil disimpan ke Firebase!");
+                }
+
+                resetLinkForm();
+                renderAdminLinksList();
+            });
+        };
+
+        function renderAdminLinksList() {
+            const listEl = document.getElementById('admin-links-list');
+            if (appLinks.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-gray-400">Belum ada link tersimpan.</p>`;
+                return;
+            }
+
+            let html = '';
+            appLinks.forEach(link => {
+                html += `
+                    <div class="bg-navy-900/60 p-3 rounded-xl border border-gray-700 flex items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <img src="${link.image}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">
+                            <div class="min-w-0">
+                                <h5 class="text-xs font-bold text-white truncate">${link.title}</h5>
+                                <p class="text-[11px] text-gray-400 truncate">${link.url}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 flex-shrink-0">
+                            <button onclick="editLink('${link.id}')" class="px-3 py-1.5 bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 text-xs font-semibold rounded-lg transition">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteLink('${link.id}')" class="px-3 py-1.5 bg-navy-800 hover:bg-red-600 text-gray-300 hover:text-white text-xs font-semibold rounded-lg transition">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        window.editLink = function(id) {
+            const link = appLinks.find(l => l.id === id);
+            if (!link) return;
+
+            document.getElementById('edit-link-id').value = link.id;
+            document.getElementById('link-title-input').value = link.title;
+            document.getElementById('link-url-input').value = link.url;
+            document.getElementById('form-link-title-label').innerHTML = `<i class="fa-solid fa-pen-to-square text-gold-500 mr-2"></i> Edit Link: ${link.title}`;
+            document.getElementById('link-submit-btn').innerText = "Perbarui Link";
+            document.getElementById('link-cancel-edit-btn').classList.remove('hidden');
+
+            document.getElementById('link-form').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.cancelEditLink = function() {
+            resetLinkForm();
+        };
+
+        function resetLinkForm() {
+            document.getElementById('edit-link-id').value = '';
+            document.getElementById('link-title-input').value = '';
+            document.getElementById('link-url-input').value = '';
+            document.getElementById('link-image-input').value = '';
+            document.getElementById('form-link-title-label').innerHTML = `<i class="fa-solid fa-circle-plus text-gold-500 mr-2"></i> Tambah Link Baru`;
+            document.getElementById('link-submit-btn').innerText = "Simpan Link";
+            document.getElementById('link-cancel-edit-btn').classList.add('hidden');
+        }
+
+        window.deleteLink = async function(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus link ini dari Firebase?")) {
+                try {
+                    await deleteDoc(doc(db, "links", id));
+                    appLinks = appLinks.filter(l => l.id !== id);
+                    renderAdminLinksList();
+                    showToast("Link berhasil dihapus!");
+                } catch (e) {
+                    showToast("Gagal menghapus link!", true);
+                }
+            }
+        };
+
+        window.handleSaveBranding = async function(event) {
+            event.preventDefault();
+            appConfig.mainTitle = document.getElementById('setting-main-title').value;
+            appConfig.mainSubtitle = document.getElementById('setting-main-subtitle').value;
+            appConfig.footerDesc = document.getElementById('setting-footer-desc').value;
+
+            processImageFile('setting-logo-input', async function(logoBase64) {
+                if (logoBase64) appConfig.logoUrl = logoBase64;
+                processImageFile('setting-bg-input', async function(bgBase64) {
+                    if (bgBase64) appConfig.bgUrl = bgBase64;
+
+                    await setDoc(doc(db, "settings", "config"), appConfig);
+                    showToast("Tampilan & Teks berhasil disimpan ke Firebase!");
+                });
+            });
+        };
+
+        window.handleSaveSocial = async function(event) {
+            event.preventDefault();
+            if (!appConfig.socials) appConfig.socials = {};
+            appConfig.socials.whatsapp = document.getElementById('social-wa').value;
+            appConfig.socials.tiktok = document.getElementById('social-tiktok').value;
+            appConfig.socials.instagram = document.getElementById('social-instagram').value;
+
+            await setDoc(doc(db, "settings", "config"), appConfig);
+            showToast("Media sosial berhasil disimpan ke Firebase!");
+        };
+
+        window.handleSaveFloating = async function(event) {
+            event.preventDefault();
+            floatingConfig.active = document.getElementById('floating-active').checked;
+            floatingConfig.text = document.getElementById('floating-text').value;
+            floatingConfig.url = document.getElementById('floating-url').value;
+
+            processImageFile('floating-image-input', async function(imgBase64) {
+                if (imgBase64) floatingConfig.image = imgBase64;
+                await setDoc(doc(db, "settings", "floating"), floatingConfig);
+                showToast("Kotak melayang berhasil disimpan ke Firebase!");
+            });
+        };
+
+        window.handleUpdatePassword = async function(event) {
+            event.preventDefault();
+            const oldPass = document.getElementById('old-pass').value;
+            const newPass = document.getElementById('new-pass').value;
+            const confirmPass = document.getElementById('confirm-pass').value;
+            const msgEl = document.getElementById('password-msg');
+
+            if (oldPass !== appConfig.adminPassword) {
+                msgEl.innerText = "Password lama tidak sesuai!";
+                msgEl.className = "text-xs font-medium text-red-400";
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                msgEl.innerText = "Konfirmasi password baru tidak cocok!";
+                msgEl.className = "text-xs font-medium text-red-400";
+                return;
+            }
+
+            if (newPass.length < 4) {
+                msgEl.innerText = "Password baru minimal 4 karakter!";
+                msgEl.className = "text-xs font-medium text-red-400";
+                return;
+            }
+
+            appConfig.adminPassword = newPass;
+            await setDoc(doc(db, "settings", "config"), appConfig);
+            msgEl.innerText = "Password admin berhasil diubah!";
+            msgEl.className = "text-xs font-medium text-green-400";
+            document.getElementById('old-pass').value = '';
+            document.getElementById('new-pass').value = '';
+            document.getElementById('confirm-pass').value = '';
+            showToast("Password admin berhasil diperbarui!");
+        };
+
+        function renderStatsFilterOptions() {
+            const selectEl = document.getElementById('stats-filter-target');
+            let html = `<option value="all">Semua (Profil & Link)</option><option value="profile">Kunjungan Profil Web</option>`;
+            appLinks.forEach(l => {
+                html += `<option value="${l.id}">Klik: ${l.title}</option>`;
+            });
+            selectEl.innerHTML = html;
+        }
+
+        window.renderStatistics = function() {
+            const filterTarget = document.getElementById('stats-filter-target').value;
+
+            const totalProfile = appStats.logs.filter(l => l.type === 'profile').length;
+            const totalClicks = appStats.logs.filter(l => l.type === 'link').length;
+
+            document.getElementById('stat-total-profile').innerText = totalProfile;
+            document.getElementById('stat-total-clicks').innerText = totalClicks;
+
+            let filteredLogs = appStats.logs;
+            if (filterTarget === 'profile') {
+                filteredLogs = appStats.logs.filter(l => l.type === 'profile');
+            } else if (filterTarget !== 'all') {
+                filteredLogs = appStats.logs.filter(l => l.type === 'link' && l.linkId === filterTarget);
+            }
+
+            const statsByDate = {};
+            filteredLogs.forEach(log => {
+                const dateStr = new Date(log.timestamp).toISOString().split('T')[0];
+                statsByDate[dateStr] = (statsByDate[dateStr] || 0) + 1;
+            });
+
+            const sortedDates = Object.keys(statsByDate).sort();
+            const counts = sortedDates.map(d => statsByDate[d]);
+
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates.length > 0 ? sortedDates : ['Hari Ini'],
+                    datasets: [{
+                        label: 'Jumlah Kunjungan / Klik',
+                        data: counts.length > 0 ? counts : [0],
+                        backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                        borderColor: '#eab308',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#eab308',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: { family: 'Inter', size: 11 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 }, precision: 0 }
+                        }
+                    }
+                }
+            });
+        };
+
+        // Initialize on load
+        window.onload = function() {
+            loadDataFromFirebase();
+        };
+    </script>
+</body>
+</html>
