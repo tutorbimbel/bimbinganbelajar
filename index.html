@@ -60,14 +60,15 @@
     <div id="app-background" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-700 opacity-40" style="background-image: url('https://placehold.co/1920x1080/0f172a/ffffff?text=Background+Tutor+Bimbel');"></div>
     <div class="absolute inset-0 bg-gradient-overlay z-0"></div>
 
-    <div id="floating-box-container" class="hidden fixed bottom-20 right-6 z-40 max-w-sm w-full bg-navy-800 border-2 border-gold-500 rounded-2xl shadow-2xl p-4 transition-all duration-300 transform translate-y-0">
-        <div class="flex justify-between items-start mb-2">
+    <!-- UPDATE 2: Kotak Melayang Diubah ke Center dan Responsif -->
+    <div id="floating-box-container" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90%] max-w-sm bg-navy-800 border-2 border-gold-500 rounded-2xl shadow-2xl p-5 transition-all duration-300">
+        <div class="flex justify-between items-start mb-3">
             <span class="text-xs font-semibold px-2 py-0.5 bg-gold-500 text-navy-900 rounded-full uppercase tracking-wider">Informasi Penting</span>
             <button onclick="closeFloatingBox()" class="text-gray-400 hover:text-white transition bg-navy-900/50 hover:bg-red-600 rounded-full w-7 h-7 flex items-center justify-center">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
-        <div id="floating-box-content" class="text-sm text-gray-200 mb-3 space-y-2">
+        <div id="floating-box-content" class="text-sm text-gray-200 mb-4 space-y-2">
             <!-- Dynamic Floating Content -->
         </div>
         <div id="floating-box-link-wrap" class="hidden">
@@ -192,7 +193,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Foto Icon (Max 5MB - Format JPG/PNG - Rasio 1:1)</label>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Foto Icon (Akan Dikompres Otomatis - Format JPG/PNG)</label>
                                 <input type="file" id="link-image-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
                             </div>
                             <div class="flex space-x-3">
@@ -233,11 +234,11 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Logo Halaman (Max 5MB - JPG/PNG)</label>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Logo Halaman (Akan Dikompres Otomatis)</label>
                                 <input type="file" id="setting-logo-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Foto Latar Belakang / Background (Max 5MB - JPG/PNG)</label>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Foto Background (Akan Dikompres Otomatis)</label>
                                 <input type="file" id="setting-bg-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
                             </div>
                         </div>
@@ -290,7 +291,7 @@
                             <textarea id="floating-text" rows="3" class="w-full px-3 py-2 bg-navy-900 border border-gray-700 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Upload Foto dalam Kotak (Opsional - Max 5MB)</label>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Upload Foto dalam Kotak (Opsional - Akan Dikompres)</label>
                             <input type="file" id="floating-image-input" accept="image/jpeg, image/png" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-navy-900 hover:file:bg-gold-400 cursor-pointer">
                         </div>
                         <div>
@@ -310,11 +311,16 @@
                             <h3 class="text-sm font-bold text-white">Statistik Kunjungan & Klik</h3>
                             <p class="text-xs text-gray-400">Analisis kunjungan profil dan klik dari Firestore</p>
                         </div>
-                        <div class="flex items-center space-x-2">
+                        <div class="flex flex-wrap items-center gap-2">
                             <select id="stats-filter-target" onchange="renderStatistics()" class="px-3 py-1.5 bg-navy-800 border border-gray-700 rounded-xl text-white text-xs focus:outline-none focus:border-gold-500">
                                 <option value="all">Semua (Profil & Link)</option>
                                 <option value="profile">Kunjungan Profil Web</option>
                             </select>
+                            
+                            <!-- UPDATE 4: Tambah Fitur Reset Statistik -->
+                            <button onclick="resetStatistics()" class="px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 rounded-xl text-xs font-bold transition flex items-center">
+                                <i class="fa-solid fa-trash-can mr-1.5"></i> Reset
+                            </button>
                         </div>
                     </div>
 
@@ -430,32 +436,28 @@
         let floatingConfig = defaultFloating;
         let chartInstance = null;
 
-        // Load data from Firebase Firestore
+        // UPDATE 1: Perbaikan Performa - Load secara Paralel menggunakan Promise.all 
+        // agar menghindari delay atau rendering yang terlalu lama menunggu Firebase.
         async function loadDataFromFirebase() {
             try {
-                // 1. Load Config (settings/config)
-                const configDoc = await getDoc(doc(db, "settings", "config"));
-                if (configDoc.exists()) {
-                    appConfig = configDoc.data();
-                } else {
-                    await setDoc(doc(db, "settings", "config"), defaultAppConfig);
-                }
+                const configPromise = getDoc(doc(db, "settings", "config"));
+                const floatingPromise = getDoc(doc(db, "settings", "floating"));
+                const linksPromise = getDocs(collection(db, "links"));
+                const statsPromise = getDocs(collection(db, "stats"));
 
-                // 2. Load Floating Box (settings/floating)
-                const floatingDoc = await getDoc(doc(db, "settings", "floating"));
-                if (floatingDoc.exists()) {
-                    floatingConfig = floatingDoc.data();
-                } else {
-                    await setDoc(doc(db, "settings", "floating"), defaultFloating);
-                }
+                const [configDoc, floatingDoc, linksSnapshot, statsSnapshot] = await Promise.all([
+                    configPromise, floatingPromise, linksPromise, statsPromise
+                ]);
 
-                // 3. Load Links (collection: links)
-                const linksSnapshot = await getDocs(collection(db, "links"));
+                if (configDoc.exists()) appConfig = configDoc.data();
+                else await setDoc(doc(db, "settings", "config"), defaultAppConfig);
+
+                if (floatingDoc.exists()) floatingConfig = floatingDoc.data();
+                else await setDoc(doc(db, "settings", "floating"), defaultFloating);
+
                 if (!linksSnapshot.empty) {
                     appLinks = [];
-                    linksSnapshot.forEach(d => {
-                        appLinks.push({ id: d.id, ...d.data() });
-                    });
+                    linksSnapshot.forEach(d => appLinks.push({ id: d.id, ...d.data() }));
                 } else {
                     for (let l of defaultLinks) {
                         await setDoc(doc(db, "links", l.id), { title: l.title, url: l.url, image: l.image });
@@ -463,22 +465,20 @@
                     appLinks = defaultLinks;
                 }
 
-                // 4. Load Stats (collection: stats)
-                const statsSnapshot = await getDocs(collection(db, "stats"));
                 appStats.logs = [];
-                statsSnapshot.forEach(d => {
-                    appStats.logs.push(d.data());
-                });
+                statsSnapshot.forEach(d => appStats.logs.push(d.data()));
 
             } catch (error) {
                 console.error("Error loading from Firebase:", error);
-                showToast("Gagal memuat data dari Firebase!", true);
+                showToast("Gagal memuat sebagian data dari Firebase!", true);
             }
 
-            // Record initial profile visit
-            await recordStat('profile');
+            // Merender seketika tanpa tertahan proses perekaman statistik
             renderMainPage();
             checkFloatingBox();
+            
+            // Rekam statistik kunjungan berjalan asinkron di belakang layar (tanpa mem-block UI)
+            recordStat('profile');
         }
 
         // Record Stat to Firebase
@@ -679,17 +679,43 @@
             }
         };
 
+        // UPDATE 3 (A): Menggunakan Canvas untuk Kompresi Otomatis gambar 
+        // Ini menghindari Firestore error limit >1MB yang bikin web macet / gagal simpan
         function processImageFile(fileInputId, callback) {
             const fileInput = document.getElementById(fileInputId);
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast("Ukuran file maksimal 5MB!", true);
-                    return;
-                }
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    callback(e.target.result);
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 1280; // Maksimal lebar HD
+                        const MAX_HEIGHT = 1280;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Kompresi kualitas menjadi 75%
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                        callback(dataUrl);
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -804,18 +830,24 @@
             }
         };
 
+        // UPDATE 3 (B): Tambahan panggil renderMainPage() agar perubahan 
+        // latar belakang / logo tersimpan langsung muncul seketika di Web.
         window.handleSaveBranding = async function(event) {
             event.preventDefault();
             appConfig.mainTitle = document.getElementById('setting-main-title').value;
             appConfig.mainSubtitle = document.getElementById('setting-main-subtitle').value;
             appConfig.footerDesc = document.getElementById('setting-footer-desc').value;
 
-            processImageFile('setting-logo-input', async function(logoBase64) {
+            processImageFile('setting-logo-input', function(logoBase64) {
                 if (logoBase64) appConfig.logoUrl = logoBase64;
+                
                 processImageFile('setting-bg-input', async function(bgBase64) {
                     if (bgBase64) appConfig.bgUrl = bgBase64;
 
                     await setDoc(doc(db, "settings", "config"), appConfig);
+                    
+                    // Update antarmuka seketika setelah upload & simpan selesai
+                    renderMainPage(); 
                     showToast("Tampilan & Teks berhasil disimpan ke Firebase!");
                 });
             });
@@ -829,6 +861,7 @@
             appConfig.socials.instagram = document.getElementById('social-instagram').value;
 
             await setDoc(doc(db, "settings", "config"), appConfig);
+            renderMainPage(); // Update realtime
             showToast("Media sosial berhasil disimpan ke Firebase!");
         };
 
@@ -841,6 +874,8 @@
             processImageFile('floating-image-input', async function(imgBase64) {
                 if (imgBase64) floatingConfig.image = imgBase64;
                 await setDoc(doc(db, "settings", "floating"), floatingConfig);
+                
+                checkFloatingBox(); // Render ulang floating box realtime
                 showToast("Kotak melayang berhasil disimpan ke Firebase!");
             });
         };
@@ -957,6 +992,29 @@
                     }
                 }
             });
+        };
+
+        // UPDATE 4: Logika Fungsi Reset Status Kunjungan Firebase
+        window.resetStatistics = async function() {
+            if (confirm("Apakah Anda yakin ingin mereset/menghapus SEMUA data statistik kunjungan? Data tidak dapat dikembalikan.")) {
+                try {
+                    const statsSnapshot = await getDocs(collection(db, "stats"));
+                    const deletePromises = [];
+                    
+                    statsSnapshot.forEach(docSnap => {
+                        deletePromises.push(deleteDoc(doc(db, "stats", docSnap.id)));
+                    });
+                    
+                    await Promise.all(deletePromises);
+                    
+                    appStats.logs = []; // Kosongkan state lokal
+                    renderStatistics(); // Muat ulang grafik
+                    showToast("Seluruh statistik kunjungan berhasil direset!");
+                } catch (error) {
+                    console.error("Gagal mereset stats:", error);
+                    showToast("Gagal mereset statistik!", true);
+                }
+            }
         };
 
         // Initialize on load
