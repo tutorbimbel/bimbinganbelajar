@@ -60,7 +60,6 @@
     <div id="app-background" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-700 opacity-40" style="background-image: url('https://placehold.co/1920x1080/0f172a/ffffff?text=Background+Tutor+Bimbel');"></div>
     <div class="absolute inset-0 bg-gradient-overlay z-0"></div>
 
-    <!-- UPDATE 2: Kotak Melayang Diubah ke Center dan Responsif -->
     <div id="floating-box-container" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90%] max-w-sm bg-navy-800 border-2 border-gold-500 rounded-2xl shadow-2xl p-5 transition-all duration-300">
         <div class="flex justify-between items-start mb-3">
             <span class="text-xs font-semibold px-2 py-0.5 bg-gold-500 text-navy-900 rounded-full uppercase tracking-wider">Informasi Penting</span>
@@ -309,7 +308,7 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-navy-900/60 p-4 rounded-2xl border border-gray-700">
                         <div>
                             <h3 class="text-sm font-bold text-white">Statistik Kunjungan & Klik</h3>
-                            <p class="text-xs text-gray-400">Analisis kunjungan profil dan klik dari Firestore</p>
+                            <p class="text-xs text-gray-400" id="stats-loading-text">Memuat data terbaru dari Firebase...</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <select id="stats-filter-target" onchange="renderStatistics()" class="px-3 py-1.5 bg-navy-800 border border-gray-700 rounded-xl text-white text-xs focus:outline-none focus:border-gold-500">
@@ -317,7 +316,6 @@
                                 <option value="profile">Kunjungan Profil Web</option>
                             </select>
                             
-                            <!-- UPDATE 4: Tambah Fitur Reset Statistik -->
                             <button onclick="resetStatistics()" class="px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 rounded-xl text-xs font-bold transition flex items-center">
                                 <i class="fa-solid fa-trash-can mr-1.5"></i> Reset
                             </button>
@@ -401,7 +399,11 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Default Data fallback if empty in Firestore
+        // Kunci Cache Lokal
+        const CACHE_CONFIG = "tb_cache_config";
+        const CACHE_LINKS = "tb_cache_links";
+        const CACHE_FLOATING = "tb_cache_floating";
+
         let defaultAppConfig = {
             mainTitle: "Selamat Datang di Tutor Bimbel",
             mainSubtitle: "Silakan Pilih Menu Tujuan Anda",
@@ -432,62 +434,103 @@
 
         let appConfig = defaultAppConfig;
         let appLinks = defaultLinks;
-        let appStats = { logs: [] };
         let floatingConfig = defaultFloating;
+        let appStats = { logs: [] };
         let chartInstance = null;
+        let isStatsLoaded = false; // Mencegah reload berulang
 
-        // UPDATE 1: Perbaikan Performa - Load secara Paralel menggunakan Promise.all 
-        // agar menghindari delay atau rendering yang terlalu lama menunggu Firebase.
+        // OPTIMASI: Muat data dari Cache, lalu perbarui sinkronisasi di latar belakang
         async function loadDataFromFirebase() {
-            try {
-                const configPromise = getDoc(doc(db, "settings", "config"));
-                const floatingPromise = getDoc(doc(db, "settings", "floating"));
-                const linksPromise = getDocs(collection(db, "links"));
-                const statsPromise = getDocs(collection(db, "stats"));
+            
+            // 1. CACHE-FIRST: Baca langsung dari penyimpanan lokal perangkat agar instan
+            const cachedConfig = localStorage.getItem(CACHE_CONFIG);
+            const cachedLinks = localStorage.getItem(CACHE_LINKS);
+            const cachedFloating = localStorage.getItem(CACHE_FLOATING);
 
-                const [configDoc, floatingDoc, linksSnapshot, statsSnapshot] = await Promise.all([
-                    configPromise, floatingPromise, linksPromise, statsPromise
+            if (cachedConfig) appConfig = JSON.parse(cachedConfig);
+            if (cachedLinks) appLinks = JSON.parse(cachedLinks);
+            if (cachedFloating) floatingConfig = JSON.parse(cachedFloating);
+
+            // Jika ada data di cache, langsung tampilkan (0ms loading time)
+            if (cachedConfig || cachedLinks) {
+                renderMainPage();
+                checkFloatingBox();
+            }
+
+            // 2. BACKGROUND SYNC: Sinkronkan dengan data terbaru Firebase tanpa menghambat UI
+            try {
+                // OPTIMASI: Jangan load data 'stats' di awal! Load saat buka admin saja.
+                const [configDoc, floatingDoc, linksSnapshot] = await Promise.all([
+                    getDoc(doc(db, "settings", "config")),
+                    getDoc(doc(db, "settings", "floating")),
+                    getDocs(collection(db, "links"))
                 ]);
 
-                if (configDoc.exists()) appConfig = configDoc.data();
-                else await setDoc(doc(db, "settings", "config"), defaultAppConfig);
+                if (configDoc.exists()) {
+                    appConfig = configDoc.data();
+                    localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig));
+                } else {
+                    await setDoc(doc(db, "settings", "config"), defaultAppConfig);
+                }
 
-                if (floatingDoc.exists()) floatingConfig = floatingDoc.data();
-                else await setDoc(doc(db, "settings", "floating"), defaultFloating);
+                if (floatingDoc.exists()) {
+                    floatingConfig = floatingDoc.data();
+                    localStorage.setItem(CACHE_FLOATING, JSON.stringify(floatingConfig));
+                } else {
+                    await setDoc(doc(db, "settings", "floating"), defaultFloating);
+                }
 
                 if (!linksSnapshot.empty) {
                     appLinks = [];
                     linksSnapshot.forEach(d => appLinks.push({ id: d.id, ...d.data() }));
+                    localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
                 } else {
                     for (let l of defaultLinks) {
                         await setDoc(doc(db, "links", l.id), { title: l.title, url: l.url, image: l.image });
                     }
                     appLinks = defaultLinks;
+                    localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
                 }
 
-                appStats.logs = [];
-                statsSnapshot.forEach(d => appStats.logs.push(d.data()));
+                // Update UI secara transparan jika ada pembaruan dari Firebase
+                renderMainPage();
+                checkFloatingBox();
 
             } catch (error) {
-                console.error("Error loading from Firebase:", error);
-                showToast("Gagal memuat sebagian data dari Firebase!", true);
+                console.error("Error sinkronisasi Firebase:", error);
+                // Kita tidak perlu memunculkan error toast yang mengganggu pengunjung,
+                // karena web masih berjalan memakai data cache.
             }
-
-            // Merender seketika tanpa tertahan proses perekaman statistik
-            renderMainPage();
-            checkFloatingBox();
             
-            // Rekam statistik kunjungan berjalan asinkron di belakang layar (tanpa mem-block UI)
+            // Rekam statistik kunjungan (berjalan asynchronous/tidak menunggu)
             recordStat('profile');
         }
 
-        // Record Stat to Firebase
+        // LAZY LOAD: Fetch data statistik hanya saat tab statistik dibuka
+        async function fetchStatsDataLazily() {
+            if (isStatsLoaded) return; // Jangan fetch berulang kali
+            const loadText = document.getElementById('stats-loading-text');
+            loadText.innerText = "Memuat ribuan riwayat kunjungan dari server...";
+            try {
+                const statsSnapshot = await getDocs(collection(db, "stats"));
+                appStats.logs = [];
+                statsSnapshot.forEach(d => appStats.logs.push(d.data()));
+                isStatsLoaded = true;
+                loadText.innerText = "Analisis kunjungan profil dan klik dari Firestore";
+                renderStatistics();
+            } catch (error) {
+                console.error("Gagal muat statistik:", error);
+                loadText.innerText = "Gagal memuat statistik. Silakan coba lagi.";
+            }
+        }
+
         window.recordStat = async function(type, linkId = null) {
             const logEntry = {
                 type: type,
                 linkId: linkId,
                 timestamp: Date.now()
             };
+            // Update memori lokal stat
             appStats.logs.push(logEntry);
             try {
                 await addDoc(collection(db, "stats"), logEntry);
@@ -675,12 +718,11 @@
             });
 
             if (tabName === 'stats') {
+                if(!isStatsLoaded) fetchStatsDataLazily();
                 renderStatistics();
             }
         };
 
-        // UPDATE 3 (A): Menggunakan Canvas untuk Kompresi Otomatis gambar 
-        // Ini menghindari Firestore error limit >1MB yang bikin web macet / gagal simpan
         function processImageFile(fileInputId, callback) {
             const fileInput = document.getElementById(fileInputId);
             if (fileInput.files && fileInput.files[0]) {
@@ -690,7 +732,7 @@
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 1280; // Maksimal lebar HD
+                        const MAX_WIDTH = 1280; 
                         const MAX_HEIGHT = 1280;
                         let width = img.width;
                         let height = img.height;
@@ -711,7 +753,6 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // Kompresi kualitas menjadi 75%
                         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
                         callback(dataUrl);
                     };
@@ -751,6 +792,9 @@
                     appLinks.push({ id: newId, ...newLinkData });
                     showToast("Link baru berhasil disimpan ke Firebase!");
                 }
+
+                // Update Cache Lokal Instan
+                localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
 
                 resetLinkForm();
                 renderAdminLinksList();
@@ -822,6 +866,7 @@
                 try {
                     await deleteDoc(doc(db, "links", id));
                     appLinks = appLinks.filter(l => l.id !== id);
+                    localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
                     renderAdminLinksList();
                     showToast("Link berhasil dihapus!");
                 } catch (e) {
@@ -830,8 +875,6 @@
             }
         };
 
-        // UPDATE 3 (B): Tambahan panggil renderMainPage() agar perubahan 
-        // latar belakang / logo tersimpan langsung muncul seketika di Web.
         window.handleSaveBranding = async function(event) {
             event.preventDefault();
             appConfig.mainTitle = document.getElementById('setting-main-title').value;
@@ -845,8 +888,8 @@
                     if (bgBase64) appConfig.bgUrl = bgBase64;
 
                     await setDoc(doc(db, "settings", "config"), appConfig);
+                    localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig)); // Update Cache
                     
-                    // Update antarmuka seketika setelah upload & simpan selesai
                     renderMainPage(); 
                     showToast("Tampilan & Teks berhasil disimpan ke Firebase!");
                 });
@@ -861,7 +904,8 @@
             appConfig.socials.instagram = document.getElementById('social-instagram').value;
 
             await setDoc(doc(db, "settings", "config"), appConfig);
-            renderMainPage(); // Update realtime
+            localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig));
+            renderMainPage();
             showToast("Media sosial berhasil disimpan ke Firebase!");
         };
 
@@ -874,8 +918,9 @@
             processImageFile('floating-image-input', async function(imgBase64) {
                 if (imgBase64) floatingConfig.image = imgBase64;
                 await setDoc(doc(db, "settings", "floating"), floatingConfig);
+                localStorage.setItem(CACHE_FLOATING, JSON.stringify(floatingConfig));
                 
-                checkFloatingBox(); // Render ulang floating box realtime
+                checkFloatingBox();
                 showToast("Kotak melayang berhasil disimpan ke Firebase!");
             });
         };
@@ -907,6 +952,7 @@
 
             appConfig.adminPassword = newPass;
             await setDoc(doc(db, "settings", "config"), appConfig);
+            localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig));
             msgEl.innerText = "Password admin berhasil diubah!";
             msgEl.className = "text-xs font-medium text-green-400";
             document.getElementById('old-pass').value = '';
@@ -994,10 +1040,10 @@
             });
         };
 
-        // UPDATE 4: Logika Fungsi Reset Status Kunjungan Firebase
         window.resetStatistics = async function() {
             if (confirm("Apakah Anda yakin ingin mereset/menghapus SEMUA data statistik kunjungan? Data tidak dapat dikembalikan.")) {
                 try {
+                    document.getElementById('stats-loading-text').innerText = "Sedang mereset data server...";
                     const statsSnapshot = await getDocs(collection(db, "stats"));
                     const deletePromises = [];
                     
@@ -1007,8 +1053,9 @@
                     
                     await Promise.all(deletePromises);
                     
-                    appStats.logs = []; // Kosongkan state lokal
-                    renderStatistics(); // Muat ulang grafik
+                    appStats.logs = [];
+                    renderStatistics();
+                    document.getElementById('stats-loading-text').innerText = "Semua data statistik berhasil direset.";
                     showToast("Seluruh statistik kunjungan berhasil direset!");
                 } catch (error) {
                     console.error("Gagal mereset stats:", error);
