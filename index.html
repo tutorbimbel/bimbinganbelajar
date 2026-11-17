@@ -42,6 +42,11 @@
         .bg-gradient-overlay {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.90) 0%, rgba(30, 41, 59, 0.85) 100%);
         }
+        /* Optimasi klik dan sentuhan lintas perangkat (iOS, Android, Tablet, Desktop) */
+        a, button, .link-card-btn {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -55,15 +60,15 @@
         }
     </style>
 </head>
-<body class="h-full bg-navy-900 text-white flex flex-col justify-between relative antialiased selection:bg-gold-500 selection:text-navy-900">
+<body class="min-h-screen min-h-[100dvh] bg-navy-900 text-white flex flex-col justify-between relative antialiased selection:bg-gold-500 selection:text-navy-900">
 
-    <div id="app-background" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-700 opacity-40" style="background-image: url('https://placehold.co/1920x1080/0f172a/ffffff?text=Background+Tutor+Bimbel');"></div>
-    <div class="absolute inset-0 bg-gradient-overlay z-0"></div>
+    <div id="app-background" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-700 opacity-40 pointer-events-none" style="background-image: url('https://placehold.co/1920x1080/0f172a/ffffff?text=Background+Tutor+Bimbel');"></div>
+    <div class="absolute inset-0 bg-gradient-overlay z-0 pointer-events-none"></div>
 
     <div id="floating-box-container" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90%] max-w-sm bg-navy-800 border-2 border-gold-500 rounded-2xl shadow-2xl p-5 transition-all duration-300">
         <div class="flex justify-between items-start mb-3">
             <span class="text-xs font-semibold px-2 py-0.5 bg-gold-500 text-navy-900 rounded-full uppercase tracking-wider">Informasi Penting</span>
-            <button onclick="closeFloatingBox()" class="text-gray-400 hover:text-white transition bg-navy-900/50 hover:bg-red-600 rounded-full w-7 h-7 flex items-center justify-center">
+            <button type="button" onclick="closeFloatingBox()" class="text-gray-400 hover:text-white transition bg-navy-900/50 hover:bg-red-600 rounded-full w-7 h-7 flex items-center justify-center">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -71,7 +76,7 @@
             <!-- Dynamic Floating Content -->
         </div>
         <div id="floating-box-link-wrap" class="hidden">
-            <a id="floating-box-link" href="#" target="_blank" class="block text-center w-full py-2 bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
+            <a id="floating-box-link" href="#" target="_blank" rel="noopener noreferrer" class="block text-center w-full py-2.5 bg-gold-500 hover:bg-gold-400 active:scale-[0.98] text-navy-900 font-bold rounded-xl text-xs transition shadow-md">
                 Kunjungi Tautan <i class="fa-solid fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -102,7 +107,7 @@
         <div id="social-media-container" class="flex justify-center items-center space-x-4 pt-2"></div>
         
         <div class="pt-4 pb-2">
-            <button onclick="openAdminLoginModal()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-navy-800/80 hover:bg-navy-700 text-gray-400 hover:text-gold-400 text-xs font-medium rounded-full border border-gray-700/50 shadow-sm transition">
+            <button type="button" onclick="openAdminLoginModal()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-navy-800/80 hover:bg-navy-700 text-gray-400 hover:text-gold-400 text-xs font-medium rounded-full border border-gray-700/50 shadow-sm transition">
                 <i class="fa-solid fa-lock text-[10px]"></i>
                 <span>Admin Panel</span>
             </button>
@@ -116,7 +121,7 @@
                     <i class="fa-solid fa-shield-halved text-xl"></i>
                     <h3 class="text-lg font-bold text-white">Login Admin</h3>
                 </div>
-                <button onclick="closeAdminLoginModal()" class="text-gray-400 hover:text-white transition">
+                <button type="button" onclick="closeAdminLoginModal()" class="text-gray-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -145,28 +150,28 @@
                         <p class="text-xs text-gray-400">Kelola web, link, statistik, dan tampilan database</p>
                     </div>
                 </div>
-                <button onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white bg-navy-800 hover:bg-red-600 w-9 h-9 rounded-xl flex items-center justify-center transition">
+                <button type="button" onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white bg-navy-800 hover:bg-red-600 w-9 h-9 rounded-xl flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
             <div class="flex flex-wrap bg-navy-900/50 px-4 pt-2 border-b border-gray-700 gap-2">
-                <button onclick="switchAdminTab('links')" id="tab-btn-links" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gold-400 border-b-2 border-gold-500 bg-navy-800">
+                <button type="button" onclick="switchAdminTab('links')" id="tab-btn-links" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gold-400 border-b-2 border-gold-500 bg-navy-800">
                     <i class="fa-solid fa-link mr-1.5"></i> Kelola Link
                 </button>
-                <button onclick="switchAdminTab('content')" id="tab-btn-content" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                <button type="button" onclick="switchAdminTab('content')" id="tab-btn-content" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
                     <i class="fa-solid fa-pen-to-square mr-1.5"></i> Teks & Tampilan
                 </button>
-                <button onclick="switchAdminTab('social')" id="tab-btn-social" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                <button type="button" onclick="switchAdminTab('social')" id="tab-btn-social" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
                     <i class="fa-solid fa-share-nodes mr-1.5"></i> Media Sosial
                 </button>
-                <button onclick="switchAdminTab('floating')" id="tab-btn-floating" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                <button type="button" onclick="switchAdminTab('floating')" id="tab-btn-floating" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
                     <i class="fa-solid fa-message mr-1.5"></i> Kotak Melayang
                 </button>
-                <button onclick="switchAdminTab('stats')" id="tab-btn-stats" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                <button type="button" onclick="switchAdminTab('stats')" id="tab-btn-stats" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
                     <i class="fa-solid fa-chart-line mr-1.5"></i> Statistik
                 </button>
-                <button onclick="switchAdminTab('security')" id="tab-btn-security" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
+                <button type="button" onclick="switchAdminTab('security')" id="tab-btn-security" class="admin-tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-gray-400 hover:text-white">
                     <i class="fa-solid fa-key mr-1.5"></i> Keamanan
                 </button>
             </div>
@@ -316,7 +321,7 @@
                                 <option value="profile">Kunjungan Profil Web</option>
                             </select>
                             
-                            <button onclick="resetStatistics()" class="px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 rounded-xl text-xs font-bold transition flex items-center">
+                            <button type="button" onclick="resetStatistics()" class="px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 rounded-xl text-xs font-bold transition flex items-center">
                                 <i class="fa-solid fa-trash-can mr-1.5"></i> Reset
                             </button>
                         </div>
@@ -374,7 +379,7 @@
         </div>
     </div>
 
-    <div id="toast-notification" class="fixed top-6 right-6 z-50 transform translate-y-[-200%] transition-transform duration-300 bg-navy-800 border border-gold-500 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
+    <div id="toast-notification" class="fixed top-6 right-6 z-50 pointer-events-none transform translate-y-[-200%] transition-transform duration-300 bg-navy-800 border border-gold-500 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
         <i id="toast-icon" class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
         <span id="toast-message" class="text-xs font-medium">Berhasil menyimpan data ke Firebase!</span>
     </div>
@@ -396,13 +401,53 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        let analytics = null;
+        try {
+            analytics = getAnalytics(app);
+        } catch (e) {
+            console.warn("Analytics dilewati pada browser/mode ini:", e);
+        }
         const db = getFirestore(app);
 
         // Kunci Cache Lokal
         const CACHE_CONFIG = "tb_cache_config";
         const CACHE_LINKS = "tb_cache_links";
         const CACHE_FLOATING = "tb_cache_floating";
+
+        function safeGetStorage(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function safeSetStorage(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                // Abaikan jika browser membatasi storage (misal Safari Private Mode)
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function normalizeUrl(url) {
+            if (!url) return '#';
+            const trimmed = String(url).trim();
+            if (/^(https?:\/\/|mailto:|tel:|whatsapp:)/i.test(trimmed)) {
+                return trimmed;
+            }
+            return 'https://' + trimmed;
+        }
 
         let defaultAppConfig = {
             mainTitle: "Selamat Datang di Tutor Bimbel",
@@ -443,19 +488,23 @@
         async function loadDataFromFirebase() {
             
             // 1. CACHE-FIRST: Baca langsung dari penyimpanan lokal perangkat agar instan
-            const cachedConfig = localStorage.getItem(CACHE_CONFIG);
-            const cachedLinks = localStorage.getItem(CACHE_LINKS);
-            const cachedFloating = localStorage.getItem(CACHE_FLOATING);
+            const cachedConfig = safeGetStorage(CACHE_CONFIG);
+            const cachedLinks = safeGetStorage(CACHE_LINKS);
+            const cachedFloating = safeGetStorage(CACHE_FLOATING);
 
-            if (cachedConfig) appConfig = JSON.parse(cachedConfig);
-            if (cachedLinks) appLinks = JSON.parse(cachedLinks);
-            if (cachedFloating) floatingConfig = JSON.parse(cachedFloating);
-
-            // Jika ada data di cache, langsung tampilkan (0ms loading time)
-            if (cachedConfig || cachedLinks) {
-                renderMainPage();
-                checkFloatingBox();
+            if (cachedConfig) {
+                try { appConfig = JSON.parse(cachedConfig); } catch (e) {}
             }
+            if (cachedLinks) {
+                try { appLinks = JSON.parse(cachedLinks); } catch (e) {}
+            }
+            if (cachedFloating) {
+                try { floatingConfig = JSON.parse(cachedFloating); } catch (e) {}
+            }
+
+            // Langsung render tampilan awal agar link bisa segera diklik tanpa menunggu jaringan
+            renderMainPage();
+            checkFloatingBox();
 
             // 2. BACKGROUND SYNC: Sinkronkan dengan data terbaru Firebase tanpa menghambat UI
             try {
@@ -468,14 +517,14 @@
 
                 if (configDoc.exists()) {
                     appConfig = configDoc.data();
-                    localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig));
+                    safeSetStorage(CACHE_CONFIG, JSON.stringify(appConfig));
                 } else {
                     await setDoc(doc(db, "settings", "config"), defaultAppConfig);
                 }
 
                 if (floatingDoc.exists()) {
                     floatingConfig = floatingDoc.data();
-                    localStorage.setItem(CACHE_FLOATING, JSON.stringify(floatingConfig));
+                    safeSetStorage(CACHE_FLOATING, JSON.stringify(floatingConfig));
                 } else {
                     await setDoc(doc(db, "settings", "floating"), defaultFloating);
                 }
@@ -483,13 +532,13 @@
                 if (!linksSnapshot.empty) {
                     appLinks = [];
                     linksSnapshot.forEach(d => appLinks.push({ id: d.id, ...d.data() }));
-                    localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
+                    safeSetStorage(CACHE_LINKS, JSON.stringify(appLinks));
                 } else {
                     for (let l of defaultLinks) {
                         await setDoc(doc(db, "links", l.id), { title: l.title, url: l.url, image: l.image });
                     }
                     appLinks = defaultLinks;
-                    localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
+                    safeSetStorage(CACHE_LINKS, JSON.stringify(appLinks));
                 }
 
                 // Update UI secara transparan jika ada pembaruan dari Firebase
@@ -498,8 +547,6 @@
 
             } catch (error) {
                 console.error("Error sinkronisasi Firebase:", error);
-                // Kita tidak perlu memunculkan error toast yang mengganggu pengunjung,
-                // karena web masih berjalan memakai data cache.
             }
             
             // Rekam statistik kunjungan (berjalan asynchronous/tidak menunggu)
@@ -550,7 +597,7 @@
 
             const logoContainer = document.getElementById('logo-container');
             if (appConfig.logoUrl) {
-                logoContainer.innerHTML = `<img src="${appConfig.logoUrl}" alt="Logo" class="w-20 h-20 rounded-full object-cover shadow-xl border-2 border-white/20">`;
+                logoContainer.innerHTML = `<img src="${escapeHtml(appConfig.logoUrl)}" alt="Logo" class="w-20 h-20 rounded-full object-cover shadow-xl border-2 border-white/20">`;
             } else {
                 logoContainer.innerHTML = `<div class="w-20 h-20 bg-gold-500 rounded-full flex items-center justify-center shadow-xl border-2 border-white/20"><i class="fa-solid fa-graduation-cap text-navy-900 text-3xl"></i></div>`;
             }
@@ -562,13 +609,13 @@
             const socialEl = document.getElementById('social-media-container');
             let socialHtml = '';
             if (appConfig.socials?.whatsapp) {
-                socialHtml += `<a href="${appConfig.socials.whatsapp}" target="_blank" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-whatsapp text-lg"></i></a>`;
+                socialHtml += `<a href="${escapeHtml(normalizeUrl(appConfig.socials.whatsapp))}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="w-11 h-11 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 active:scale-95 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-whatsapp text-lg pointer-events-none"></i></a>`;
             }
             if (appConfig.socials?.tiktok) {
-                socialHtml += `<a href="${appConfig.socials.tiktok}" target="_blank" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-tiktok text-lg"></i></a>`;
+                socialHtml += `<a href="${escapeHtml(normalizeUrl(appConfig.socials.tiktok))}" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="w-11 h-11 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 active:scale-95 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-tiktok text-lg pointer-events-none"></i></a>`;
             }
             if (appConfig.socials?.instagram) {
-                socialHtml += `<a href="${appConfig.socials.instagram}" target="_blank" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-instagram text-lg"></i></a>`;
+                socialHtml += `<a href="${escapeHtml(normalizeUrl(appConfig.socials.instagram))}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="w-11 h-11 rounded-full bg-navy-800 hover:bg-gold-500 hover:text-navy-900 active:scale-95 text-gray-300 flex items-center justify-center border border-gray-700 transition shadow-md"><i class="fa-brands fa-instagram text-lg pointer-events-none"></i></a>`;
             }
             socialEl.innerHTML = socialHtml;
 
@@ -581,27 +628,30 @@
             let linksHtml = '';
             appLinks.forEach(link => {
                 const imgSrc = link.image || 'https://placehold.co/400x400/0f172a/eab308?text=Icon';
+                const safeHref = escapeHtml(normalizeUrl(link.url));
+                const safeTitle = escapeHtml(link.title);
+                const safeId = escapeHtml(link.id);
                 linksHtml += `
-                    <div onclick="handleLinkClick('${link.id}', '${link.url}')" class="group bg-navy-800/80 hover:bg-navy-800 border border-gray-700/80 hover:border-gold-500 rounded-2xl p-4 flex items-center space-x-4 cursor-pointer transition-all duration-300 shadow-lg hover:shadow-gold-500/10 hover:-translate-y-1">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl overflow-hidden bg-navy-900 border border-gray-700 group-hover:border-gold-500 transition">
-                            <img src="${imgSrc}" alt="${link.title}" class="w-full h-full object-cover aspect-square group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x400/0f172a/eab308?text=Error'">
+                    <a href="${safeHref}" target="_blank" rel="noopener noreferrer" onclick="handleLinkClick('${safeId}')" class="link-card-btn group bg-navy-800/80 hover:bg-navy-800 active:bg-navy-700 active:scale-[0.98] border border-gray-700/80 hover:border-gold-500 rounded-2xl p-4 flex items-center space-x-4 cursor-pointer select-none transition-all duration-300 shadow-lg hover:shadow-gold-500/10 hover:-translate-y-1">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl overflow-hidden bg-navy-900 border border-gray-700 group-hover:border-gold-500 transition pointer-events-none">
+                            <img src="${escapeHtml(imgSrc)}" alt="${safeTitle}" draggable="false" class="w-full h-full object-cover aspect-square group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x400/0f172a/eab308?text=Error'">
                         </div>
-                        <div class="flex-grow min-w-0">
-                            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-gold-400 transition truncate">${link.title}</h3>
+                        <div class="flex-grow min-w-0 pointer-events-none">
+                            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-gold-400 transition truncate">${safeTitle}</h3>
                             <p class="text-xs text-gray-400 mt-1 flex items-center">
                                 <span>Klik untuk Akses</span>
-                                <i class="fa-solid fa-arrow-right ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-gold-400"></i>
+                                <i class="fa-solid fa-arrow-right ml-1.5 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity text-gold-400"></i>
                             </p>
                         </div>
-                    </div>
+                    </a>
                 `;
             });
             gridEl.innerHTML = linksHtml;
         }
 
-        window.handleLinkClick = async function(linkId, url) {
-            await recordStat('link', linkId);
-            window.open(url, '_blank');
+        // Non-blocking stat recorder: browser langsung membuka <a href> tanpa terkena blokir pop-up iOS/Android
+        window.handleLinkClick = function(linkId) {
+            recordStat('link', linkId);
         };
 
         function checkFloatingBox() {
@@ -617,14 +667,14 @@
 
             let html = '';
             if (floatingConfig.image) {
-                html += `<div class="rounded-xl overflow-hidden mb-2 border border-gray-700"><img src="${floatingConfig.image}" class="w-full h-32 object-cover"></div>`;
+                html += `<div class="rounded-xl overflow-hidden mb-2 border border-gray-700"><img src="${escapeHtml(floatingConfig.image)}" class="w-full h-32 object-cover"></div>`;
             }
-            html += `<p class="text-xs leading-relaxed text-gray-200">${floatingConfig.text || ''}</p>`;
+            html += `<p class="text-xs leading-relaxed text-gray-200">${escapeHtml(floatingConfig.text || '')}</p>`;
             contentEl.innerHTML = html;
 
             if (floatingConfig.url) {
                 linkWrap.classList.remove('hidden');
-                linkEl.href = floatingConfig.url;
+                linkEl.href = normalizeUrl(floatingConfig.url);
             } else {
                 linkWrap.classList.add('hidden');
             }
@@ -794,10 +844,11 @@
                 }
 
                 // Update Cache Lokal Instan
-                localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
+                safeSetStorage(CACHE_LINKS, JSON.stringify(appLinks));
 
                 resetLinkForm();
                 renderAdminLinksList();
+                renderMainPage();
             });
         };
 
@@ -813,17 +864,17 @@
                 html += `
                     <div class="bg-navy-900/60 p-3 rounded-xl border border-gray-700 flex items-center justify-between gap-3">
                         <div class="flex items-center space-x-3 min-w-0">
-                            <img src="${link.image}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">
+                            <img src="${escapeHtml(link.image)}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">
                             <div class="min-w-0">
-                                <h5 class="text-xs font-bold text-white truncate">${link.title}</h5>
-                                <p class="text-[11px] text-gray-400 truncate">${link.url}</p>
+                                <h5 class="text-xs font-bold text-white truncate">${escapeHtml(link.title)}</h5>
+                                <p class="text-[11px] text-gray-400 truncate">${escapeHtml(link.url)}</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 flex-shrink-0">
-                            <button onclick="editLink('${link.id}')" class="px-3 py-1.5 bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 text-xs font-semibold rounded-lg transition">
+                            <button type="button" onclick="editLink('${escapeHtml(link.id)}')" class="px-3 py-1.5 bg-navy-800 hover:bg-gold-500 hover:text-navy-900 text-gray-300 text-xs font-semibold rounded-lg transition">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button onclick="deleteLink('${link.id}')" class="px-3 py-1.5 bg-navy-800 hover:bg-red-600 text-gray-300 hover:text-white text-xs font-semibold rounded-lg transition">
+                            <button type="button" onclick="deleteLink('${escapeHtml(link.id)}')" class="px-3 py-1.5 bg-navy-800 hover:bg-red-600 text-gray-300 hover:text-white text-xs font-semibold rounded-lg transition">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -840,7 +891,7 @@
             document.getElementById('edit-link-id').value = link.id;
             document.getElementById('link-title-input').value = link.title;
             document.getElementById('link-url-input').value = link.url;
-            document.getElementById('form-link-title-label').innerHTML = `<i class="fa-solid fa-pen-to-square text-gold-500 mr-2"></i> Edit Link: ${link.title}`;
+            document.getElementById('form-link-title-label').innerHTML = `<i class="fa-solid fa-pen-to-square text-gold-500 mr-2"></i> Edit Link: ${escapeHtml(link.title)}`;
             document.getElementById('link-submit-btn').innerText = "Perbarui Link";
             document.getElementById('link-cancel-edit-btn').classList.remove('hidden');
 
@@ -866,8 +917,9 @@
                 try {
                     await deleteDoc(doc(db, "links", id));
                     appLinks = appLinks.filter(l => l.id !== id);
-                    localStorage.setItem(CACHE_LINKS, JSON.stringify(appLinks));
+                    safeSetStorage(CACHE_LINKS, JSON.stringify(appLinks));
                     renderAdminLinksList();
+                    renderMainPage();
                     showToast("Link berhasil dihapus!");
                 } catch (e) {
                     showToast("Gagal menghapus link!", true);
@@ -888,7 +940,7 @@
                     if (bgBase64) appConfig.bgUrl = bgBase64;
 
                     await setDoc(doc(db, "settings", "config"), appConfig);
-                    localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig)); // Update Cache
+                    safeSetStorage(CACHE_CONFIG, JSON.stringify(appConfig)); // Update Cache
                     
                     renderMainPage(); 
                     showToast("Tampilan & Teks berhasil disimpan ke Firebase!");
@@ -904,7 +956,7 @@
             appConfig.socials.instagram = document.getElementById('social-instagram').value;
 
             await setDoc(doc(db, "settings", "config"), appConfig);
-            localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig));
+            safeSetStorage(CACHE_CONFIG, JSON.stringify(appConfig));
             renderMainPage();
             showToast("Media sosial berhasil disimpan ke Firebase!");
         };
@@ -918,7 +970,7 @@
             processImageFile('floating-image-input', async function(imgBase64) {
                 if (imgBase64) floatingConfig.image = imgBase64;
                 await setDoc(doc(db, "settings", "floating"), floatingConfig);
-                localStorage.setItem(CACHE_FLOATING, JSON.stringify(floatingConfig));
+                safeSetStorage(CACHE_FLOATING, JSON.stringify(floatingConfig));
                 
                 checkFloatingBox();
                 showToast("Kotak melayang berhasil disimpan ke Firebase!");
@@ -952,7 +1004,7 @@
 
             appConfig.adminPassword = newPass;
             await setDoc(doc(db, "settings", "config"), appConfig);
-            localStorage.setItem(CACHE_CONFIG, JSON.stringify(appConfig));
+            safeSetStorage(CACHE_CONFIG, JSON.stringify(appConfig));
             msgEl.innerText = "Password admin berhasil diubah!";
             msgEl.className = "text-xs font-medium text-green-400";
             document.getElementById('old-pass').value = '';
@@ -965,7 +1017,7 @@
             const selectEl = document.getElementById('stats-filter-target');
             let html = `<option value="all">Semua (Profil & Link)</option><option value="profile">Kunjungan Profil Web</option>`;
             appLinks.forEach(l => {
-                html += `<option value="${l.id}">Klik: ${l.title}</option>`;
+                html += `<option value="${escapeHtml(l.id)}">Klik: ${escapeHtml(l.title)}</option>`;
             });
             selectEl.innerHTML = html;
         }
@@ -1064,10 +1116,12 @@
             }
         };
 
-        // Initialize on load
-        window.onload = function() {
+        // Langsung jalankan saat DOM siap tanpa menunggu seluruh aset eksternal (window.onload)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadDataFromFirebase);
+        } else {
             loadDataFromFirebase();
-        };
+        }
     </script>
 </body>
 </html>
